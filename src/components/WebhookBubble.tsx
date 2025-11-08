@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { DragEvent, useEffect, useRef, useState } from "react";
 import spriteSheet from "@/assets/sprite_animation_small_2.png";
 import CharacterSprite from "@/components/CharacterSprite";
 import { Loader2 } from "lucide-react";
+import { TASK_DRAG_TYPE } from "@/lib/dragTypes";
 
 export default function WebhookBubble() {
   const [text, setText] = useState("");
   const [isBubbleVisible, setIsBubbleVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDropTargetActive, setIsDropTargetActive] = useState(false);
 
   // Храним один активный таймер скрытия баббла
   const hideTimerRef = useRef<number | null>(null);
@@ -61,8 +63,32 @@ export default function WebhookBubble() {
     <>
       {/* Character */}
       <div
-        className="fixed left-12 bottom-4 z-50 cursor-pointer"
+        className={`fixed left-12 bottom-4 z-50 cursor-pointer transition duration-200 ${
+          isDropTargetActive ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""
+        }`}
         onClick={handleCharacterClick}
+        onDragOver={(event) => {
+          if (event.dataTransfer.types.includes(TASK_DRAG_TYPE)) {
+            event.preventDefault();
+          }
+        }}
+        onDragEnter={(event: DragEvent<HTMLDivElement>) => {
+          if (event.dataTransfer.types.includes(TASK_DRAG_TYPE)) {
+            event.preventDefault();
+            setIsDropTargetActive(true);
+          }
+        }}
+        onDragLeave={() => setIsDropTargetActive(false)}
+        onDrop={(event: DragEvent<HTMLDivElement>) => {
+          if (!event.dataTransfer.types.includes(TASK_DRAG_TYPE)) {
+            return;
+          }
+          event.preventDefault();
+          setIsDropTargetActive(false);
+          setText("Well done!");
+          setIsBubbleVisible(true);
+          restartHideTimer();
+        }}
       >
         <CharacterSprite
           src={spriteSheet}

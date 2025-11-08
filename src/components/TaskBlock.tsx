@@ -1,7 +1,9 @@
+import { DragEvent } from "react";
 import { motion } from "framer-motion";
 import { Trash2, Calendar, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { TASK_DRAG_TYPE } from "@/lib/dragTypes";
 
 interface TaskBlockProps {
   id: string;
@@ -44,8 +46,15 @@ export const TaskBlock = ({
     Math.floor(((importance - 1) / 9) * colorMap.length)
   );
 
+  const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.setData(TASK_DRAG_TYPE, id);
+    event.dataTransfer.effectAllowed = "move";
+  };
+
   return (
     <motion.div
+      draggable
+      onDragStart={handleDragStart}
       layout
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
