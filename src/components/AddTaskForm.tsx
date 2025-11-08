@@ -9,12 +9,12 @@ import { Plus, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import type { TablesInsert } from "@/integrations/supabase/types";
+
+type NewTaskInput = Pick<TablesInsert<"tasks">, "title" | "deadline" | "importance" | "status">;
+
 interface AddTaskFormProps {
-  onAdd: (task: {
-    title: string;
-    deadline: string;
-    importance: number;
-  }) => void;
+  onAdd: (task: NewTaskInput) => void;
 }
 export const AddTaskForm = ({
   onAdd
@@ -31,7 +31,8 @@ export const AddTaskForm = ({
     onAdd({
       title,
       deadline: format(date, "yyyy-MM-dd"),
-      importance
+      importance,
+      status: "todo"
     });
     setTitle("");
     setDate(new Date());

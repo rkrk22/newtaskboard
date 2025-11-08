@@ -8,54 +8,54 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 35.5 8.6% 95.7%;
-    --foreground: 24.3 14.5% 11.2%;
+    --background: 36 70% 91%;
+    --foreground: 24 32% 20%;
 
-    --card: 45 3.1% 98.4%;
-    --card-foreground: 24.3 14.5% 11.2%;
-    --panel: 32.2 16.1% 92%;
+    --card: 37 85% 95%;
+    --card-foreground: 24 32% 20%;
+    --panel: 31 71% 87%;
 
-    --popover: 34.3 13.7% 93.1%;
-    --popover-foreground: 24.3 14.5% 11.2%;
+    --popover: 37 80% 96%;
+    --popover-foreground: 24 32% 20%;
 
-    --primary: 3.7 51% 70.2%;
-    --primary-foreground: 33 52% 96%;
+    --primary: 347 77% 75%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 43.6 63.1% 62.9%;
-    --secondary-foreground: 24.3 14.5% 11.2%;
+    --secondary: 34 85% 76%;
+    --secondary-foreground: 24 32% 20%;
 
-    --muted: 34.7 14.9% 89%;
-    --muted-foreground: 31.2 20.4% 37.6%;
+    --muted: 27 57% 85%;
+    --muted-foreground: 24 28% 35%;
 
-    --accent: 234.7 26.7% 75.7%;
-    --accent-foreground: 24.3 14.5% 11.2%;
+    --accent: 179 49% 69%;
+    --accent-foreground: 24 32% 20%;
 
-    --destructive: 8.4 52.9% 61.8%;
-    --destructive-foreground: 34.3 13.7% 93.1%;
+    --destructive: 2 79% 71%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 31.2 18.8% 84.7%;
-    --input: 31.2 18.8% 84.7%;
-    --ring: 3.7 51% 70.2%;
+    --border: 25 59% 83%;
+    --input: 25 59% 83%;
+    --ring: 347 77% 75%;
 
     --radius: 0.75rem;
     
     /* Custom task colors - solid pastel palette */
-    --task-color-1: 0 44.3% 72%;
-    --task-color-2: 43.6 60.4% 66.3%;
-    --task-color-3: 132.3 30.6% 62.7%;
-    --task-color-4: 234.7 26.7% 75.7%;
-    --task-color-5: 16 45.5% 72.2%;
-    --task-color-6: 287.6 24.7% 71.2%;
+    --task-color-1: 359 81% 80%;
+    --task-color-2: 50 81% 76%;
+    --task-color-3: 112 43% 79%;
+    --task-color-4: 256 100% 85%;
+    --task-color-5: 33 87% 76%;
+    --task-color-6: 209 100% 87%;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 32.2 16.1% 92%;
-    --sidebar-foreground: 24.3 14.5% 11.2%;
-    --sidebar-primary: 3.7 51% 70.2%;
-    --sidebar-primary-foreground: 33 52% 96%;
-    --sidebar-accent: 34.7 14.9% 89%;
-    --sidebar-accent-foreground: 24.3 14.5% 11.2%;
-    --sidebar-border: 31.2 18.8% 84.7%;
-    --sidebar-ring: 3.7 51% 70.2%;
+    --sidebar-background: 34 65% 92%;
+    --sidebar-foreground: 24 32% 20%;
+    --sidebar-primary: 347 77% 75%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 27 57% 85%;
+    --sidebar-accent-foreground: 24 28% 35%;
+    --sidebar-border: 25 59% 83%;
+    --sidebar-ring: 347 77% 75%;
   }
 
   .dark {

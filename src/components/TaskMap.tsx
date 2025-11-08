@@ -5,6 +5,7 @@ import { TaskSidebar } from "./TaskSidebar";
 import { EditTaskDialog } from "./EditTaskDialog";
 import { toast } from "sonner";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import {
   Dialog,
   DialogContent,
@@ -15,17 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
-interface Task {
-  id: string;
-  title: string;
-  deadline: string;
-  importance: number;
-}
+type Task = Tables<"tasks">;
+type NewTaskInput = Pick<TablesInsert<"tasks">, "title" | "deadline" | "importance" | "status">;
 
 export const TaskMap = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [conflictDialog, setConflictDialog] = useState<{
-    newTask: { title: string; deadline: string; importance: number };
+    newTask: NewTaskInput;
     conflicts: Task[];
   } | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -82,25 +79,33 @@ export const TaskMap = () => {
     return (importance / 10) * urgencyFactor;
   };
 
-  const handleAddTask = async (task: {
-    title: string;
-    deadline: string;
-    importance: number;
-  }) => {
+  const handleAddTask = async (task: NewTaskInput) => {
+    const normalizedTask: NewTaskInput = {
+      ...task,
+      status: task.status ?? "todo",
+    };
+
     // Check if there's already a task with the same importance
-    const conflictingTasks = tasks.filter((t) => t.importance === task.importance);
+    const conflictingTasks = tasks.filter((t) => t.importance === normalizedTask.importance);
     
     if (conflictingTasks.length > 0) {
-      setConflictDialog({ newTask: task, conflicts: conflictingTasks });
+      setConflictDialog({ newTask: normalizedTask, conflicts: conflictingTasks });
       return;
     }
 
-    await insertTask(task);
+    await insertTask(normalizedTask);
   };
   ////////////////////////
 
-const insertTask = async (task: { title: string; deadline: string; importance: number }) => {
-  const { error } = await supabase.from("tasks").insert(task); // .insert([task]) тоже можно
+const insertTask = async (task: NewTaskInput) => {
+  const payload: TablesInsert<"tasks"> = {
+    title: task.title,
+    deadline: task.deadline,
+    importance: task.importance,
+    status: task.status ?? "todo",
+  };
+
+  const { error } = await supabase.from("tasks").insert(payload); // .insert([task]) тоже можно
   if (error) {
     toast.error("Failed to add task");
     console.error(error);
@@ -156,7 +161,7 @@ const insertTask = async (task: { title: string; deadline: string; importance: n
 
   const handleUpdateTask = async (
     id: string,
-    updates: { title: string; deadline: string; importance: number }
+    updates: Pick<Task, "title" | "deadline" | "importance">
   ) => {
     const currentTask = tasks.find((t) => t.id === id);
     if (!currentTask) return;
@@ -226,11 +231,12 @@ const insertTask = async (task: { title: string; deadline: string; importance: n
                     id={task.id}
                     title={task.title}
                     deadline={task.deadline}
-                    importance={task.importance}
-                    size={calculateSize(task.deadline, task.importance)}
-                    onClick={() => setEditingTask(task)}
-                    onDelete={handleDeleteTask}
-                  />
+                  importance={task.importance}
+                  status={task.status}
+                  size={calculateSize(task.deadline, task.importance)}
+                  onClick={() => setEditingTask(task)}
+                  onDelete={handleDeleteTask}
+                />
                 ))
               )}
             </div>

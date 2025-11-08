@@ -1,12 +1,12 @@
 import { Plus } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarTrigger } from "@/components/ui/sidebar";
 import { AddTaskForm } from "./AddTaskForm";
+import type { TablesInsert } from "@/integrations/supabase/types";
+
+type NewTaskInput = Pick<TablesInsert<"tasks">, "title" | "deadline" | "importance" | "status">;
+
 interface TaskSidebarProps {
-  onAdd: (task: {
-    title: string;
-    deadline: string;
-    importance: number;
-  }) => void;
+  onAdd: (task: NewTaskInput) => void;
 }
 export function TaskSidebar({
   onAdd

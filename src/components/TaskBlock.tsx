@@ -1,9 +1,10 @@
 import { DragEvent } from "react";
 import { motion } from "framer-motion";
-import { Trash2, Calendar, Star } from "lucide-react";
+import { Trash2, Calendar, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { TASK_DRAG_TYPE } from "@/lib/dragTypes";
+import { cn } from "@/lib/utils";
 
 interface TaskBlockProps {
   id: string;
@@ -11,6 +12,7 @@ interface TaskBlockProps {
   deadline: string;
   importance: number;
   size: number;
+  status: "todo" | "done";
   onClick: () => void;
   onDelete: (id: string) => void;
 }
@@ -21,6 +23,7 @@ export const TaskBlock = ({
   deadline,
   importance,
   size,
+  status,
   onClick,
   onDelete,
 }: TaskBlockProps) => {
@@ -45,6 +48,7 @@ export const TaskBlock = ({
     colorMap.length - 1,
     Math.floor(((importance - 1) / 9) * colorMap.length)
   );
+  const isDone = status === "done";
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
     event.dataTransfer.setData(TASK_DRAG_TYPE, id);
@@ -74,7 +78,10 @@ export const TaskBlock = ({
       <div className="flex h-full flex-col justify-between text-foreground">
         <div>
           <h3 
-            className="line-clamp-3 font-semibold"
+            className={cn(
+              "line-clamp-3 font-semibold transition-colors",
+              isDone && "line-through text-muted-foreground"
+            )}
             style={{ fontSize: `${titleFontSize}px` }}
           >
             {title}
@@ -109,6 +116,15 @@ export const TaskBlock = ({
       >
         <Trash2 style={{ width: `${Math.max(12, scaledSize / 16)}px`, height: `${Math.max(12, scaledSize / 16)}px` }} />
       </Button>
+
+      {isDone && (
+        <div
+          className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
+          aria-label="Task completed"
+        >
+          <Check className="h-3.5 w-3.5" />
+        </div>
+      )}
     </motion.div>
   );
 };
