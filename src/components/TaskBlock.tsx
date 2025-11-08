@@ -31,7 +31,18 @@ export const TaskBlock = ({
   const iconSize = Math.max(10, Math.min(scaledSize / 15, 14));
   const padding = Math.max(8, Math.min(scaledSize / 10, 16));
   
-  const gradientIndex = importance > 5 ? 1 : 2;
+  const colorMap = [
+    "hsl(var(--task-color-1))",
+    "hsl(var(--task-color-2))",
+    "hsl(var(--task-color-3))",
+    "hsl(var(--task-color-4))",
+    "hsl(var(--task-color-5))",
+    "hsl(var(--task-color-6))",
+  ];
+  const gradientIndex = Math.min(
+    colorMap.length - 1,
+    Math.floor(((importance - 1) / 9) * colorMap.length)
+  );
 
   return (
     <motion.div
@@ -41,16 +52,17 @@ export const TaskBlock = ({
       exit={{ scale: 0, opacity: 0, transition: { duration: 0 } }}
       whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="group relative cursor-pointer rounded-xl shadow-lg transition-all hover:shadow-xl"
+      className="group relative cursor-pointer rounded-xl transition-all"
       onClick={onClick}
       style={{
         width: `${Math.min(scaledSize, 200)}px`,
         height: `${Math.min(scaledSize, 200)}px`,
-        background: `var(--task-gradient-${gradientIndex})`,
+        background: colorMap[gradientIndex],
         padding: `${padding}px`,
+        border: "1px solid hsl(var(--border))",
       }}
     >
-      <div className="flex h-full flex-col justify-between text-gray-700">
+      <div className="flex h-full flex-col justify-between text-foreground">
         <div>
           <h3 
             className="line-clamp-3 font-semibold"
@@ -61,12 +73,12 @@ export const TaskBlock = ({
         </div>
         
         <div className="space-y-1">
-          <div className="flex items-center gap-1 opacity-80" style={{ fontSize: `${detailFontSize}px` }}>
+          <div className="flex items-center gap-1" style={{ fontSize: `${detailFontSize}px` }}>
             <Calendar style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
             <span>{format(new Date(deadline), "MMM d")}</span>
           </div>
           
-          <div className="flex items-center gap-1 opacity-80" style={{ fontSize: `${detailFontSize}px` }}>
+          <div className="flex items-center gap-1" style={{ fontSize: `${detailFontSize}px` }}>
             <Star style={{ width: `${iconSize}px`, height: `${iconSize}px` }} className="fill-current" />
             <span>{importance}/10</span>
           </div>

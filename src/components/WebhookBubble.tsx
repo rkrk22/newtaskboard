@@ -78,7 +78,7 @@ export default function WebhookBubble() {
       {/* Loading Indicator */}
       {isLoading && (
         <div className="fixed left-12 bottom-32 z-50">
-          <div className="bg-white p-3 rounded-full shadow-lg border border-gray-200">
+          <div className="rounded-full border border-border bg-card p-3 shadow-lg">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
         </div>
@@ -88,11 +88,14 @@ export default function WebhookBubble() {
       {isBubbleVisible && !isLoading && (
         <div className="fixed left-12 bottom-32 z-50 max-w-[240px]">
           <div
-            className="relative bg-white text-black p-3 rounded-2xl shadow-lg border border-gray-200"
+            className="relative rounded-2xl border border-border bg-card p-3 text-foreground shadow-lg"
             style={{ wordWrap: "break-word" }}
           >
             {text}
-            <div className="absolute -bottom-2 left-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white" />
+            <div
+              className="absolute -bottom-2 left-4 h-0 w-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px]"
+              style={{ borderTopColor: "hsl(var(--card))" }}
+            />
           </div>
         </div>
       )}

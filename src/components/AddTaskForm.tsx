@@ -38,11 +38,11 @@ export const AddTaskForm = ({
     setImportance(5);
     toast.success("Task added successfully!");
   };
-  return <Card className="mb-8 border-2 p-6 bg-gray-50">
+  return <Card className="mb-8 border-2 border-border bg-[#fff8ee] p-6 shadow-none">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="title">Task Title</Label>
-          <Input id="title" placeholder="Enter task name..." value={title} onChange={e => setTitle(e.target.value)} className="border-2" autoComplete="off" />
+          <Input id="title" placeholder="Enter task name..." value={title} onChange={e => setTitle(e.target.value)} className="border-2 bg-transparent" autoComplete="off" />
         </div>
 
         <div className="space-y-4">
@@ -53,7 +53,7 @@ export const AddTaskForm = ({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal border-2",
+                    "w-full justify-start text-left font-normal border-2 bg-transparent",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -85,7 +85,7 @@ export const AddTaskForm = ({
               max="10"
               value={importance}
               onChange={e => setImportance(Number(e.target.value))}
-              className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
             />
           </div>
         </div>
