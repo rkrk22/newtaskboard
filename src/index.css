@@ -8,54 +8,55 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 36 70% 91%;
-    --foreground: 24 32% 20%;
+    --background: 38 62% 95%;
+    --foreground: 24 27% 18%;
 
-    --card: 37 85% 95%;
-    --card-foreground: 24 32% 20%;
-    --panel: 31 71% 87%;
+    --card: 35 74% 90%;
+    --card-foreground: 24 27% 18%;
+    --panel: 34 66% 87%;
 
-    --popover: 37 80% 96%;
-    --popover-foreground: 24 32% 20%;
+    --popover: 38 64% 97%;
+    --popover-foreground: 24 27% 18%;
 
-    --primary: 347 77% 75%;
+    --primary: 349 68% 70%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 34 85% 76%;
-    --secondary-foreground: 24 32% 20%;
+    --secondary: 45 86% 68%;
+    --secondary-foreground: 24 27% 18%;
 
-    --muted: 27 57% 85%;
-    --muted-foreground: 24 28% 35%;
+    --muted: 34 44% 83%;
+    --muted-foreground: 26 24% 32%;
 
-    --accent: 179 49% 69%;
-    --accent-foreground: 24 32% 20%;
+    --accent: 188 43% 72%;
+    --accent-foreground: 24 27% 18%;
 
-    --destructive: 2 79% 71%;
+    --destructive: 15 77% 66%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 25 59% 83%;
-    --input: 25 59% 83%;
-    --ring: 347 77% 75%;
+    --border: 33 35% 82%;
+    --input: 33 35% 82%;
+    --ring: 349 68% 70%;
 
     --radius: 0.75rem;
     
-    /* Custom task colors - solid pastel palette */
-    --task-color-1: 359 81% 80%;
-    --task-color-2: 50 81% 76%;
-    --task-color-3: 112 43% 79%;
-    --task-color-4: 256 100% 85%;
-    --task-color-5: 33 87% 76%;
-    --task-color-6: 209 100% 87%;
+    /* Pastel task colors matching the reference board */
+    --task-color-1: 348 65% 78%;
+    --task-color-2: 47 87% 67%;
+    --task-color-3: 98 48% 72%;
+    --task-color-4: 257 39% 80%;
+    --task-color-5: 20 78% 72%;
+    --task-color-6: 199 51% 74%;
+    --new-task-panel: 33 85% 98%;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 34 65% 92%;
-    --sidebar-foreground: 24 32% 20%;
-    --sidebar-primary: 347 77% 75%;
+    --sidebar-background: 33 81% 87%;
+    --sidebar-foreground: 28 22% 15%;
+    --sidebar-primary: 344 77% 78%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 27 57% 85%;
-    --sidebar-accent-foreground: 24 28% 35%;
-    --sidebar-border: 25 59% 83%;
-    --sidebar-ring: 347 77% 75%;
+    --sidebar-accent: 34 55% 85%;
+    --sidebar-accent-foreground: 26 20% 35%;
+    --sidebar-border: 33 45% 80%;
+    --sidebar-ring: 344 77% 78%;
   }
 
   .dark {
@@ -87,6 +88,7 @@ All colors MUST be HSL.
     --border: 28 20% 26%;
     --input: 28 20% 26%;
     --ring: 5 55% 68%;
+    --new-task-panel: 28 20% 24%;
     --sidebar-background: 28 20% 10%;
     --sidebar-foreground: 35 64% 93%;
     --sidebar-primary: 5 55% 68%;

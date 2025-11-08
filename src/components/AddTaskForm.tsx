@@ -39,7 +39,7 @@ export const AddTaskForm = ({
     setImportance(5);
     toast.success("Task added successfully!");
   };
-  return <Card className="mb-8 border-2 border-border bg-card p-6 shadow-none">
+  return <Card className="mb-8 border-2 border-border bg-[hsl(var(--new-task-panel))] p-6 shadow-none">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="title">Task Title</Label>
