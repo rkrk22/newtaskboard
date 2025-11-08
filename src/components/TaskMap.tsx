@@ -117,11 +117,14 @@ const insertTask = async (task: { title: string; deadline: string; importance: n
   const handleResolveConflict = async (makePriority: boolean) => {
     if (!conflictDialog) return;
 
-    const { newTask } = conflictDialog;
+    const dialogData = conflictDialog;
+    setConflictDialog(null); // close dialog immediately
+
+    const { newTask, conflicts } = dialogData;
     
     if (makePriority) {
       // Новая задача важнее - сдвигаем все конфликтующие задачи вниз (уменьшаем приоритет)
-      for (const conflict of conflictDialog.conflicts) {
+      for (const conflict of conflicts) {
         await supabase
           .from("tasks")
           .update({ importance: Math.max(1, conflict.importance - 1) })
@@ -138,7 +141,6 @@ const insertTask = async (task: { title: string; deadline: string; importance: n
       await insertTask(adjustedTask);
     }
     
-    setConflictDialog(null);
   };
 
   const handleDeleteTask = async (id: string) => {
