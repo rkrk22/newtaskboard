@@ -15,6 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import {
+  TASK_STATUS_CHANGE_EVENT,
+  type TaskStatusChangeDetail,
+} from "@/lib/events";
 
 type Task = Tables<"tasks">;
 type NewTaskInput = Pick<TablesInsert<"tasks">, "title" | "deadline" | "importance" | "status">;
@@ -48,6 +52,29 @@ export const TaskMap = () => {
 
     return () => {
       supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleStatusChange = (event: Event) => {
+      const { id, status } = (event as CustomEvent<TaskStatusChangeDetail>).detail;
+      setTasks((prev) =>
+        prev.map((task) => (task.id === id ? { ...task, status } : task))
+      );
+    };
+
+    window.addEventListener(
+      TASK_STATUS_CHANGE_EVENT,
+      handleStatusChange as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        TASK_STATUS_CHANGE_EVENT,
+        handleStatusChange as EventListener
+      );
     };
   }, []);
 
@@ -95,30 +122,47 @@ export const TaskMap = () => {
 
     await insertTask(normalizedTask);
   };
-  ////////////////////////
+  const insertTask = async (task: NewTaskInput) => {
+    const now = new Date().toISOString();
+    const optimisticId =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `temp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-const insertTask = async (task: NewTaskInput) => {
-  const payload: TablesInsert<"tasks"> = {
-    title: task.title,
-    deadline: task.deadline,
-    importance: task.importance,
-    status: task.status ?? "todo",
+    const optimisticTask: Task = {
+      id: optimisticId,
+      title: task.title,
+      deadline: task.deadline,
+      importance: task.importance,
+      status: task.status ?? "todo",
+      created_at: now,
+      updated_at: now,
+    };
+
+    // Show the sticker immediately while we wait for Supabase to confirm creation.
+    setTasks((prev) => [optimisticTask, ...prev]);
+
+    const payload: TablesInsert<"tasks"> = {
+      title: task.title,
+      deadline: task.deadline,
+      importance: task.importance,
+      status: task.status ?? "todo",
+    };
+
+    const { error } = await supabase.from("tasks").insert(payload);
+
+    if (error) {
+      // Revert the optimistic update if something went wrong.
+      setTasks((prev) => prev.filter((task) => task.id !== optimisticId));
+      toast.error("Failed to add task");
+      console.error(error);
+      return;
+    }
+
+    await fetchTasks(); // ← подтянуть свежий список задач
+    toast.success("Task added");
   };
 
-  const { error } = await supabase.from("tasks").insert(payload); // .insert([task]) тоже можно
-  if (error) {
-    toast.error("Failed to add task");
-    console.error(error);
-    return;
-  }
-  await fetchTasks();              // ← подтянуть свежий список задач
-  toast.success("Task added");
-};
-
-
-
-  
-////////////////////////////
   const handleResolveConflict = async (makePriority: boolean) => {
     if (!conflictDialog) return;
 
@@ -149,9 +193,20 @@ const insertTask = async (task: NewTaskInput) => {
   };
 
   const handleDeleteTask = async (id: string) => {
+    const taskIndex = tasks.findIndex((task) => task.id === id);
+    if (taskIndex === -1) return;
+
+    const taskToRestore = tasks[taskIndex];
+    setTasks((prev) => prev.filter((task) => task.id !== id));
+
     const { error } = await supabase.from("tasks").delete().eq("id", id);
 
     if (error) {
+      setTasks((prev) => {
+        const next = [...prev];
+        next.splice(taskIndex, 0, taskToRestore);
+        return next;
+      });
       toast.error("Failed to delete task");
       console.error(error);
     } else {

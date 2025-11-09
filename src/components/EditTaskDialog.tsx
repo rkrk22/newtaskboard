@@ -15,16 +15,14 @@ import { CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Task = Tables<"tasks">;
 
 interface EditTaskDialogProps {
-  task: {
-    id: string;
-    title: string;
-    deadline: string;
-    importance: number;
-  } | null;
+  task: Task | null;
   onClose: () => void;
-  onUpdate: (id: string, updates: { title: string; deadline: string; importance: number }) => void;
+  onUpdate: (id: string, updates: Pick<Task, "title" | "deadline" | "importance">) => void;
 }
 
 export const EditTaskDialog = ({ task, onClose, onUpdate }: EditTaskDialogProps) => {

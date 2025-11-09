@@ -20,6 +20,7 @@ export type Database = {
           deadline: string
           id: string
           importance: number
+          status: "done" | "todo"
           title: string
           updated_at: string
         }
@@ -28,6 +29,7 @@ export type Database = {
           deadline: string
           id?: string
           importance: number
+          status?: "done" | "todo"
           title: string
           updated_at?: string
         }
@@ -36,6 +38,7 @@ export type Database = {
           deadline?: string
           id?: string
           importance?: number
+          status?: "done" | "todo"
           title?: string
           updated_at?: string
         }

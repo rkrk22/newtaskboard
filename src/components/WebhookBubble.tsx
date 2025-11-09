@@ -3,6 +3,9 @@ import spriteSheet from "@/assets/sprite_animation_small_2.png";
 import CharacterSprite from "@/components/CharacterSprite";
 import { Loader2 } from "lucide-react";
 import { TASK_DRAG_TYPE } from "@/lib/dragTypes";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { dispatchTaskStatusChange } from "@/lib/events";
 
 export default function WebhookBubble() {
   const [text, setText] = useState("");
@@ -12,6 +15,7 @@ export default function WebhookBubble() {
 
   // Храним один активный таймер скрытия баббла
   const hideTimerRef = useRef<number | null>(null);
+  const completionSoundRef = useRef<HTMLAudioElement | null>(null);
 
   // Чистим таймер при размонтировании
   useEffect(() => {
@@ -20,17 +24,44 @@ export default function WebhookBubble() {
         clearTimeout(hideTimerRef.current);
         hideTimerRef.current = null;
       }
+      completionSoundRef.current?.pause();
+      completionSoundRef.current = null;
     };
   }, []);
 
-  const restartHideTimer = () => {
+  useEffect(() => {
+    completionSoundRef.current = new Audio("/sounds/task_done_sound.wav");
+    completionSoundRef.current.preload = "auto";
+  }, []);
+
+  const playCompletionSound = () => {
+    if (!completionSoundRef.current) return;
+    completionSoundRef.current.currentTime = 0;
+    completionSoundRef.current.play().catch(() => {
+      // ignore playback errors (e.g., user gesture not satisfied)
+    });
+  };
+
+  const clearHideTimer = () => {
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
     }
+  };
+
+  const restartHideTimer = () => {
+    clearHideTimer();
     hideTimerRef.current = window.setTimeout(() => {
       setIsBubbleVisible(false);
       hideTimerRef.current = null;
     }, 12000);
+  };
+
+  const celebrateCompletion = (message = "Well done!") => {
+    setText(message);
+    setIsBubbleVisible(true);
+    restartHideTimer();
+    playCompletionSound();
   };
 
   const handleCharacterClick = async () => {
@@ -59,6 +90,51 @@ export default function WebhookBubble() {
     }
   };
 
+  const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
+    if (!event.dataTransfer.types.includes(TASK_DRAG_TYPE)) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsDropTargetActive(false);
+    const taskId = event.dataTransfer.getData(TASK_DRAG_TYPE);
+
+    if (!taskId) {
+      toast.error("Не удалось определить задачу");
+      return;
+    }
+
+    const previousBubbleState = {
+      text,
+      visible: isBubbleVisible,
+    };
+
+    celebrateCompletion();
+    dispatchTaskStatusChange({ id: taskId, status: "done" });
+
+    const { error } = await supabase
+      .from("tasks")
+      .update({ status: "done" })
+      .eq("id", taskId);
+
+    if (error) {
+      console.error(error);
+      toast.error("Не получилось закрыть задачу");
+      dispatchTaskStatusChange({ id: taskId, status: "todo" });
+
+      if (previousBubbleState.visible) {
+        setText(previousBubbleState.text);
+        setIsBubbleVisible(true);
+        restartHideTimer();
+      } else {
+        clearHideTimer();
+        setIsBubbleVisible(false);
+        setText(previousBubbleState.text);
+      }
+      return;
+    }
+  };
+
   return (
     <>
       {/* Character */}
@@ -79,16 +155,7 @@ export default function WebhookBubble() {
           }
         }}
         onDragLeave={() => setIsDropTargetActive(false)}
-        onDrop={(event: DragEvent<HTMLDivElement>) => {
-          if (!event.dataTransfer.types.includes(TASK_DRAG_TYPE)) {
-            return;
-          }
-          event.preventDefault();
-          setIsDropTargetActive(false);
-          setText("Well done!");
-          setIsBubbleVisible(true);
-          restartHideTimer();
-        }}
+        onDrop={handleDrop}
       >
         <CharacterSprite
           src={spriteSheet}

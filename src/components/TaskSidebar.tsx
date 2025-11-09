@@ -11,7 +11,7 @@ interface TaskSidebarProps {
 export function TaskSidebar({
   onAdd
 }: TaskSidebarProps) {
-  return <Sidebar className="w-80 border-border" collapsible="none">
+  return <Sidebar className="w-80 border-border !bg-transparent" collapsible="none">
       
       
       <SidebarContent>
