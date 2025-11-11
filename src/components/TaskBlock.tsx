@@ -54,7 +54,6 @@ export const TaskBlock = ({
   );
   const isDone = status === "done";
   const cardBackground = isDone ? "#d6c9bd" : colorMap[gradientIndex];
-  const cardBorder = isDone ? "#bcaea0" : "hsl(var(--border))";
   const textColor = isDone ? "#6b5c51" : "#4a3f35";
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
@@ -73,7 +72,6 @@ export const TaskBlock = ({
         height: `${cardHeight}px`,
         background: cardBackground,
         padding: `${padding}px`,
-        border: `1px solid ${cardBorder}`,
       }}
     >
       <div
