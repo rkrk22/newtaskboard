@@ -8,19 +8,20 @@ type NewTaskInput = Pick<TablesInsert<"tasks">, "title" | "deadline" | "importan
 interface TaskSidebarProps {
   onAdd: (task: NewTaskInput) => void;
 }
-export function TaskSidebar({
-  onAdd
-}: TaskSidebarProps) {
-  return <Sidebar className="w-80 border-border !bg-transparent" collapsible="none">
-      
-      
+export function TaskSidebar({ onAdd }: TaskSidebarProps) {
+  return (
+    <Sidebar
+      className="w-full lg:w-80 border-border !bg-transparent"
+      collapsible="none"
+    >
       <SidebarContent>
-        <SidebarGroup className="mx-0 px-[22px]">
+        <SidebarGroup className="mx-0 px-4 lg:px-[22px]">
           <SidebarGroupLabel>New Task</SidebarGroupLabel>
           <SidebarGroupContent>
             <AddTaskForm onAdd={onAdd} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-    </Sidebar>;
+    </Sidebar>
+  );
 }

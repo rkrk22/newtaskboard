@@ -313,8 +313,10 @@ export const TaskMap = () => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full gap-6 p-6">
-        <TaskSidebar onAdd={handleAddTask} />
+      <div className="flex min-h-screen w-full flex-col gap-6 p-4 lg:flex-row lg:p-6">
+        <div className="w-full lg:w-auto">
+          <TaskSidebar onAdd={handleAddTask} />
+        </div>
         
         <main className="flex-1 bg-background">
           <div className="mx-auto max-w-7xl">
