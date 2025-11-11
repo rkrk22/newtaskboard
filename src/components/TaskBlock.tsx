@@ -27,7 +27,12 @@ export const TaskBlock = ({
   onDelete,
 }: TaskBlockProps) => {
   const baseSize = 60;
-  const scaledSize = baseSize + (size * 15);
+  const scaledSize = baseSize + size * 15;
+  const clampedSize = Math.min(scaledSize, 200);
+  const cardHeight =
+    importance === 1 || importance === 2
+      ? Math.min(clampedSize + 40, 240)
+      : clampedSize;
   
   // Dynamic font sizes based on card size
   const titleFontSize = Math.max(10, Math.min(scaledSize / 8, 16));
@@ -64,8 +69,8 @@ export const TaskBlock = ({
       className="group relative cursor-pointer rounded-xl transition-all hover:scale-[1.03]"
       onClick={onClick}
       style={{
-        width: `${Math.min(scaledSize, 200)}px`,
-        height: `${Math.min(scaledSize, 200)}px`,
+        width: `${clampedSize}px`,
+        height: `${cardHeight}px`,
         background: cardBackground,
         padding: `${padding}px`,
         border: `1px solid ${cardBorder}`,
