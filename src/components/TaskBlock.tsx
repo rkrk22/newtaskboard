@@ -1,5 +1,4 @@
 import { DragEvent } from "react";
-import { motion } from "framer-motion";
 import { Trash2, Calendar, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -48,8 +47,10 @@ export const TaskBlock = ({
     colorMap.length - 1,
     Math.floor(((importance - 1) / 9) * colorMap.length)
   );
-  const textColor = "#4a3f35";
   const isDone = status === "done";
+  const cardBackground = isDone ? "#d6c9bd" : colorMap[gradientIndex];
+  const cardBorder = isDone ? "#bcaea0" : "hsl(var(--border))";
+  const textColor = isDone ? "#6b5c51" : "#4a3f35";
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
     event.dataTransfer.setData(TASK_DRAG_TYPE, id);
@@ -57,23 +58,17 @@ export const TaskBlock = ({
   };
 
   return (
-    <motion.div
+    <div
       draggable
       onDragStart={handleDragStart}
-      layout
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0, opacity: 0, transition: { duration: 0 } }}
-      whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="group relative cursor-pointer rounded-xl transition-all"
+      className="group relative cursor-pointer rounded-xl transition-all hover:scale-[1.03]"
       onClick={onClick}
       style={{
         width: `${Math.min(scaledSize, 200)}px`,
         height: `${Math.min(scaledSize, 200)}px`,
-        background: colorMap[gradientIndex],
+        background: cardBackground,
         padding: `${padding}px`,
-        border: "1px solid hsl(var(--border))",
+        border: `1px solid ${cardBorder}`,
       }}
     >
       <div
@@ -136,12 +131,12 @@ export const TaskBlock = ({
 
       {isDone && (
         <div
-          className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
+          className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
           aria-label="Task completed"
         >
-          <Check className="h-3.5 w-3.5" />
+          <Check className="h-3 w-3" />
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
