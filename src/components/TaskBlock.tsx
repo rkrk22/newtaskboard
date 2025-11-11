@@ -53,7 +53,12 @@ export const TaskBlock = ({
     Math.floor(((importance - 1) / 9) * colorMap.length)
   );
   const isDone = status === "done";
-  const cardBackground = isDone ? "#d6c9bd" : colorMap[gradientIndex];
+  const isHighPriorityNine = !isDone && importance === 9;
+  const cardBackground = isDone
+    ? "#d6c9bd"
+    : isHighPriorityNine
+      ? "#a4c9cb"
+      : colorMap[gradientIndex];
   const textColor = isDone ? "#6b5c51" : "#4a3f35";
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
