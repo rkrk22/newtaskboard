@@ -48,6 +48,7 @@ export const TaskBlock = ({
     colorMap.length - 1,
     Math.floor(((importance - 1) / 9) * colorMap.length)
   );
+  const textColor = "#4a3f35";
   const isDone = status === "done";
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
@@ -75,12 +76,15 @@ export const TaskBlock = ({
         border: "1px solid hsl(var(--border))",
       }}
     >
-      <div className="flex h-full flex-col justify-between text-foreground">
+      <div
+        className="flex h-full flex-col justify-between"
+        style={{ color: textColor }}
+      >
         <div>
           <h3 
             className={cn(
               "line-clamp-3 font-semibold transition-colors",
-              isDone && "line-through text-muted-foreground"
+              isDone && "line-through opacity-80"
             )}
             style={{ fontSize: `${titleFontSize}px` }}
           >
@@ -90,12 +94,25 @@ export const TaskBlock = ({
         
         <div className="space-y-1">
           <div className="flex items-center gap-1" style={{ fontSize: `${detailFontSize}px` }}>
-            <Calendar style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
+            <Calendar
+              style={{
+                width: `${iconSize}px`,
+                height: `${iconSize}px`,
+                color: textColor,
+              }}
+            />
             <span>{format(new Date(deadline), "MMM d")}</span>
           </div>
           
           <div className="flex items-center gap-1" style={{ fontSize: `${detailFontSize}px` }}>
-            <Star style={{ width: `${iconSize}px`, height: `${iconSize}px` }} className="fill-current" />
+            <Star
+              className="fill-current"
+              style={{
+                width: `${iconSize}px`,
+                height: `${iconSize}px`,
+                color: textColor,
+              }}
+            />
             <span>{importance}/10</span>
           </div>
         </div>

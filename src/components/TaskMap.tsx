@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { DragEvent, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TaskBlock } from "./TaskBlock";
 import { TaskSidebar } from "./TaskSidebar";
@@ -19,12 +19,15 @@ import {
   TASK_STATUS_CHANGE_EVENT,
   type TaskStatusChangeDetail,
 } from "@/lib/events";
+import { TASK_DRAG_TYPE } from "@/lib/dragTypes";
 
 type Task = Tables<"tasks">;
 type NewTaskInput = Pick<TablesInsert<"tasks">, "title" | "deadline" | "importance" | "status">;
 
 export const TaskMap = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeTab, setActiveTab] = useState<"all" | "one">("all");
+  const [dragTarget, setDragTarget] = useState<"all" | "one" | null>(null);
   const [conflictDialog, setConflictDialog] = useState<{
     newTask: NewTaskInput;
     conflicts: Task[];
@@ -137,6 +140,7 @@ export const TaskMap = () => {
       status: task.status ?? "todo",
       created_at: now,
       updated_at: now,
+      one_thing: false,
     };
 
     // Show the sticker immediately while we wait for Supabase to confirm creation.
@@ -147,6 +151,7 @@ export const TaskMap = () => {
       deadline: task.deadline,
       importance: task.importance,
       status: task.status ?? "todo",
+      one_thing: false,
     };
 
     const { error } = await supabase.from("tasks").insert(payload);
@@ -258,6 +263,54 @@ export const TaskMap = () => {
     }
   };
 
+  const oneThingTasks = tasks.filter((task) => task.one_thing);
+  const regularTasks = tasks.filter((task) => !task.one_thing);
+  const displayedTasks = activeTab === "one" ? oneThingTasks : regularTasks;
+  const emptyStateCopy =
+    activeTab === "one"
+      ? "No focus task yet. Drag a sticker onto the tab to mark it as The One Thing."
+      : "No tasks to show. Add one or move a sticker back from The One Thing.";
+
+  const handleDropOnTab = async (
+    target: "all" | "one",
+    event: DragEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+    setDragTarget(null);
+
+    const taskId = event.dataTransfer.getData(TASK_DRAG_TYPE);
+    if (!taskId) return;
+
+    const shouldBeOneThing = target === "one";
+    const targetTask = tasks.find((task) => task.id === taskId);
+    if (!targetTask || targetTask.one_thing === shouldBeOneThing) return;
+
+    const previousTasks = tasks;
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId ? { ...task, one_thing: shouldBeOneThing } : task
+      )
+    );
+
+    const { error } = await supabase
+      .from("tasks")
+      .update({ one_thing: shouldBeOneThing })
+      .eq("id", taskId);
+
+    if (error) {
+      setTasks(previousTasks);
+      toast.error("Failed to update focus task");
+      console.error(error);
+      return;
+    }
+
+    toast.success(
+      shouldBeOneThing
+        ? "Task moved to The One Thing"
+        : "Task returned to All Tasks"
+    );
+  };
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full gap-6 p-6">
@@ -272,28 +325,71 @@ export const TaskMap = () => {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-6 rounded-2xl border-2 border-border bg-muted/20 p-8">
-              {tasks.length === 0 ? (
-                <div className="flex w-full items-center justify-center py-20">
-                  <p className="text-lg text-muted-foreground">
-                    No tasks yet. Add your first task using the sidebar!
-                  </p>
-                </div>
-              ) : (
-                tasks.map((task) => (
-                  <TaskBlock
-                    key={task.id}
-                    id={task.id}
-                    title={task.title}
-                    deadline={task.deadline}
-                  importance={task.importance}
-                  status={task.status}
-                  size={calculateSize(task.deadline, task.importance)}
-                  onClick={() => setEditingTask(task)}
-                  onDelete={handleDeleteTask}
-                />
-                ))
-              )}
+            <div className="relative">
+              <div className="flex gap-3 pl-6">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("all")}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDragEnter={() => setDragTarget("all")}
+                  onDragLeave={() => setDragTarget(null)}
+                  onDrop={(event) => handleDropOnTab("all", event)}
+                  className={`rounded-t-xl border-2 border-b-0 px-5 py-2 text-sm font-semibold transition-colors ${
+                    activeTab === "all"
+                      ? "border-emerald-500 bg-emerald-500 text-white"
+                      : "border-emerald-500/60 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
+                  } ${
+                    dragTarget === "all"
+                      ? "border-dashed bg-emerald-500/20 text-emerald-900"
+                      : ""
+                  }`}
+                >
+                  All tasks
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("one")}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDragEnter={() => setDragTarget("one")}
+                  onDragLeave={() => setDragTarget(null)}
+                  onDrop={(event) => handleDropOnTab("one", event)}
+                  className={`rounded-t-xl border-2 border-b-0 px-5 py-2 text-sm font-semibold transition-colors ${
+                    activeTab === "one"
+                      ? "border-amber-500 bg-amber-500 text-white"
+                      : "border-amber-500/60 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20"
+                  } ${
+                    dragTarget === "one"
+                      ? "border-dashed bg-amber-500/20 text-amber-900"
+                      : ""
+                  }`}
+                >
+                  The one thing
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-6 rounded-2xl border-2 border-border bg-muted/20 p-8">
+                {displayedTasks.length === 0 ? (
+                  <div className="flex w-full items-center justify-center py-20">
+                    <p className="text-lg text-muted-foreground">
+                      {emptyStateCopy}
+                    </p>
+                  </div>
+                ) : (
+                  displayedTasks.map((task) => (
+                    <TaskBlock
+                      key={task.id}
+                      id={task.id}
+                      title={task.title}
+                      deadline={task.deadline}
+                      importance={task.importance}
+                      status={task.status}
+                      size={calculateSize(task.deadline, task.importance)}
+                      onClick={() => setEditingTask(task)}
+                      onDelete={handleDeleteTask}
+                    />
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </main>
